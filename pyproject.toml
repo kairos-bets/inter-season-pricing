@@ -1,0 +1,56 @@
+[tool.poetry]
+name = "pricing"
+version = "0.0.1"
+description = ""
+authors = [
+    "Seb <sebastian.partarrieu@etu.minesparis.psl.eu>"]
+packages = [{ include = "pricing" }]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "Q", "I"]
+ignore = ["E203"]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff]
+line-length = 120
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+disallow_untyped_defs = true
+show_error_codes = true
+no_implicit_optional = true
+warn_return_any = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+namespace_packages = true
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+pydantic = "^2.8,<3.0"
+pre-commit = [
+    { python = "^3.9", version = "^3.6.2" },
+]
+pandas = "^2.2.3"
+tqdm = "^4.66.5"
+xgboost = "^2.1.4"
+scikit-learn = "^1.6.1"
+scipy = "^1.15.2"
+statsmodels = "^0.14.4"
+numpy = "^2.2.3"
+matplotlib = "^3.10.0"
+ipykernel = "^6.29.5"
+seaborn = "^0.13.2"
+beautifulsoup4 = "^4.13.3"
+fastapi = "^0.115.11"
+sqlmodel = "^0.0.23"
+pydantic-settings = "^2.8.1"
+fire = "^0.7.0"
+psycopg2 = "^2.9.10"
+uvicorn = "^0.34.0"
+selenium = "^4.29.0"
+webdriver-manager = "^4.0.2"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.8.0"
+ruff = "^0.3.3"
