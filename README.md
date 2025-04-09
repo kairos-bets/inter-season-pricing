@@ -1,6 +1,6 @@
 # Inter-season pricing
 
-We want to price post-transfer player goal scoring probabilities.
+This repository contains exploratory code to price post-transfer player goal scoring probabilities (e.g. how do you model the probability of Mbappé scoring in his first match after being transferred from PSG to Real Madrid?).
 
 ## Installation
 
@@ -30,3 +30,16 @@ pre-commit install
 - We use `isort` to sort the imports.
 - We use `mypy` to type check the code.
 - We use `pytest` to run the tests.
+
+## Data
+
+- From transfermarkt
+- From FBref
+- Focus on transfers to top 5 EU leagues
+
+## Features
+
+## Modeling
+
+- Logistic regression with good feature engineering
+- Hierarchical Bayesian?
