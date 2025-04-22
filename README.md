@@ -34,6 +34,9 @@ pre-commit install
 ## Data
 
 - From transfermarkt
+
+  - Careful: tranfermarkt lineup data stops midway in 2024, and there are also missing lineups (e.g. for Alexis Sanchez there are missing matches for 2023 from september to december)
+
 - From FBref
 - Focus on transfers to top 5 EU leagues
 
