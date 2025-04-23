@@ -10,6 +10,7 @@ from pathlib import Path
 
 import fire
 import pandas as pd
+from tqdm import tqdm
 
 from pricing.format.match_logs import (
     create_match_id,
@@ -27,6 +28,34 @@ FBREF_ELO_PATH = DATA_PATH / "fbref" / "elo"
 PROCESSED_DATA_PATH = DATA_PATH / "processed"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+
+def tag_same_season_transfer_matches(df_training: pd.DataFrame) -> pd.DataFrame:
+    """
+    Tag all matches for a player in a club for a season if any of the matches
+    in that season for the player in that club are post-transfer matches.
+    """
+    df = df_training.copy()
+
+    # Extract season start year from season column (e.g. 2021-2022 -> 2021)
+    df["season_start_year"] = df["season"].apply(lambda x: int(x[:4]))
+
+    # Group by player_id, team and season
+    grouped = df.groupby(["player_id", "team", "season_start_year"])
+
+    # Initialize the new column
+    df["is_transfer_season"] = False
+
+    # For each group, check if any match is a post-transfer match
+    for (player_id, team, season), group in tqdm(grouped):
+        if group["is_post_transfer_match"].any():
+            # If yes, tag all matches in that group
+            mask = (df["player_id"] == player_id) & (df["team"] == team) & (df["season_start_year"] == season)
+            df.loc[mask, "is_transfer_season"] = True
+
+    logging.info(f"Tagged {df['is_transfer_season'].sum()} matches as being in transfer seasons")
+
+    return df
 
 
 def get_match_logs(
@@ -85,9 +114,12 @@ def get_match_logs(
     post_transfer_ids = set(df_post_transfer["player_match_id"])
     logging.info(f"Found {len(post_transfer_ids)} unique post-transfer player-match combinations")
 
-    # Filter out post-transfer matches to create training set
-    df_training = df_match_logs.loc[~df_match_logs["player_match_id"].isin(post_transfer_ids), :]
+    # Tag post-transfer matches
+    df_training = df_match_logs.copy()
+    df_training["is_post_transfer_match"] = df_training["player_match_id"].isin(post_transfer_ids)
     logging.info(f"Created training set with {len(df_training)} player-match combinations")
+
+    df_training = tag_same_season_transfer_matches(df_training)
 
     if add_elo:
         # Load and merge ELO data
