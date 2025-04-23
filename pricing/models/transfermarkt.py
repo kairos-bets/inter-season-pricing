@@ -28,6 +28,12 @@ class TransfermarktTransfer(BaseModel):
         return empty_str_to_none(v)
 
 
+class TransfermarktTransferMapped(TransfermarktTransfer):
+    player_name_mapped: str
+    from_club_name_mapped: str
+    to_club_name_mapped: str
+
+
 class TransfermarktClub(BaseModel):
     club_id: int
     club_code: str

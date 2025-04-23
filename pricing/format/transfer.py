@@ -3,7 +3,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from pricing.models.transfermarkt import TransfermarktClub, TransfermarktTransfer
+from pricing.models.transfermarkt import TransfermarktClub, TransfermarktTransfer, TransfermarktTransferMapped
 
 
 def load_transfers(file_path: str) -> pd.DataFrame:
@@ -59,10 +59,44 @@ def get_relevant_transfers(df_transfers: pd.DataFrame, df_clubs: pd.DataFrame) -
     - The destination club is in the top 5 European leagues
     """
     cutoff_date = datetime(2025, 4, 1)
-    transfer_seasons_to_keep = ["20/21", "21/22", "22/23", "23/24", "24/25"]
+    transfer_seasons_to_keep = ["21/22", "22/23", "23/24", "24/25"]
     df_transfers = df_transfers.loc[df_transfers["transfer_season"].isin(transfer_seasons_to_keep), :]
     df_transfers = df_transfers.loc[df_transfers["to_club_id"].isin(list(df_clubs["club_id"].unique())), :]
     df_transfers = df_transfers.loc[df_transfers["transfer_date"] <= cutoff_date, :]
     # remove duplicate transfers for a player (lent then bought)
     df_transfers.drop_duplicates(subset=["transfer_season", "from_club_id", "to_club_id", "player_name"], inplace=True)
     return df_transfers
+
+
+def map_player_and_club_names_from_transfermarkt_to_fbref(
+    df_transfers: pd.DataFrame, df_matches: pd.DataFrame, club_name_mapping: dict[str, str]
+) -> pd.DataFrame:
+    """
+    Map the player and club names from transfermarkt to fbref
+    """
+    df_transfers["player_name_mapped"] = df_transfers["player_name"].apply(
+        lambda x: df_matches.loc[x, "df2_name"] if x in df_matches.index else x
+    )
+    df_transfers["from_club_name_mapped"] = df_transfers["from_club_name"].apply(
+        lambda x: club_name_mapping[x] if x in club_name_mapping else x
+    )
+    df_transfers["to_club_name_mapped"] = df_transfers["to_club_name"].apply(
+        lambda x: club_name_mapping[x] if x in club_name_mapping else x
+    )
+    return df_transfers
+
+
+def load_transfers_mapped_names(file_path: str) -> pd.DataFrame:
+    transfers_mapped_names: list[TransfermarktTransferMapped] = []
+    with open(file_path, "r") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            try:
+                transfer = TransfermarktTransferMapped(**row)
+                transfers_mapped_names.append(transfer)
+            except Exception as e:
+                print(f"Error loading transfer mapped: {e}")
+                continue
+    df_transfers_mapped_names = pd.DataFrame([transfer.model_dump() for transfer in transfers_mapped_names])
+    df_transfers_mapped_names["transfer_date"] = pd.to_datetime(df_transfers_mapped_names["transfer_date"])
+    return df_transfers_mapped_names
