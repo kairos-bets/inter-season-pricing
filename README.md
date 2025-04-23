@@ -6,19 +6,25 @@ This repository contains exploratory code to price post-transfer player goal sco
 
 ### Miniconda install
 
+(Only if you don't already have a working install)
+
+```
 mkdir -p ~/miniconda3
 curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh -o ~/miniconda3/miniconda.sh
 bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
 rm ~/miniconda3/miniconda.sh
+```
 
 ### Setup the conda env
 
+```
 source ~/miniconda3/bin/activate
 conda create -n pricing python=3.10
 conda activate pricing
 pip install poetry
 poetry install
 pre-commit install
+```
 
 ## Development
 
@@ -36,8 +42,12 @@ pre-commit install
 - From transfermarkt
 
   - Careful: tranfermarkt lineup data stops midway in 2024, and there are also missing lineups (e.g. for Alexis Sanchez there are missing matches for 2023 from september to december)
+  - We will only use transfer data from transfermarkt
 
 - From FBref
+
+  - We use player match log data from FBref for all the analysis here
+
 - Focus on transfers to top 5 EU leagues
 
 ## Features
