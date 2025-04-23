@@ -1,5 +1,7 @@
 import csv
 from datetime import datetime
+from pathlib import Path
+from typing import Optional
 
 import pandas as pd
 
@@ -86,6 +88,21 @@ def map_player_and_club_names_from_transfermarkt_to_fbref(
     return df_transfers
 
 
+def add_club_domestic_competition_id(df_transfers: pd.DataFrame, df_clubs: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add the club domestic competition id to the transfers
+    """
+    df_transfers = df_transfers.copy()
+    df_clubs.index = df_clubs["club_id"]
+    df_transfers["from_club_domestic_competition_id"] = df_transfers["from_club_id"].map(
+        df_clubs["domestic_competition_id"]
+    )
+    df_transfers["to_club_domestic_competition_id"] = df_transfers["to_club_id"].map(
+        df_clubs["domestic_competition_id"]
+    )
+    return df_transfers
+
+
 def load_transfers_mapped_names(file_path: str) -> pd.DataFrame:
     transfers_mapped_names: list[TransfermarktTransferMapped] = []
     with open(file_path, "r") as file:
@@ -100,3 +117,11 @@ def load_transfers_mapped_names(file_path: str) -> pd.DataFrame:
     df_transfers_mapped_names = pd.DataFrame([transfer.model_dump() for transfer in transfers_mapped_names])
     df_transfers_mapped_names["transfer_date"] = pd.to_datetime(df_transfers_mapped_names["transfer_date"])
     return df_transfers_mapped_names
+
+
+def find_latest_transfers_mapped_file(processed_data_path: Path) -> Optional[Path]:
+    """Find the most recent transfers mapped file"""
+    transfers_mapped_files = list(processed_data_path.glob("transfers_relevant_mapped_*.csv"))
+    if not transfers_mapped_files:
+        return None
+    return max(transfers_mapped_files, key=lambda x: x.stat().st_mtime)

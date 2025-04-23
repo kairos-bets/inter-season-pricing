@@ -50,6 +50,14 @@ pre-commit install
 
 - Focus on transfers to top 5 EU leagues
 
+Our process:
+
+- use transfer information from transfermarkt to select relevant transfers (player transferred to a club in the top 5 EU leagues in the past 5 seasons)
+- create a dataset with the first X games for these players right after they have been transferred (the test dataset)
+- create a train dataset with all the other games for all players in these top 5 EU leagues (i.e. non post-transfer games)
+- enrich the test dataset with information about the games these players played in the championship right before they transferred to be able to do our feature engineering
+- perform feature engineering on train and enriched test
+
 ## Features
 
 ## Modeling

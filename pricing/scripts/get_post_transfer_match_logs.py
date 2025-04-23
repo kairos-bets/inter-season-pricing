@@ -11,7 +11,7 @@ import fire
 import pandas as pd
 
 from pricing.format.match_logs import get_post_transfer_match_logs, load_match_logs
-from pricing.format.transfer import load_transfers_mapped_names
+from pricing.format.transfer import find_latest_transfers_mapped_file, load_transfers_mapped_names
 
 DATA_PATH = Path(__file__).parent.parent.parent / "data"
 FBREF_MATCH_LOGS_PATH = DATA_PATH / "fbref" / "match_logs"
@@ -20,7 +20,7 @@ PROCESSED_DATA_PATH = DATA_PATH / "processed"
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
-def main(
+def get_match_logs(
     match_logs_pattern: str = "*.csv", transfers_file: str = None, number_of_post_transfer_matches: int = 10
 ) -> None:
     """
@@ -49,12 +49,12 @@ def main(
     logging.info(f"Loaded {len(df_match_logs)} match log entries")
 
     # Find latest transfers file if not specified
-    if transfers_file is None:
-        transfer_files = list(PROCESSED_DATA_PATH.glob("transfers_relevant_mapped_*.csv"))
-        if not transfer_files:
+    if not transfers_file:
+        latest_file = find_latest_transfers_mapped_file(PROCESSED_DATA_PATH)
+        if latest_file is None:
             logging.error("No processed transfer files found!")
             return
-        transfers_file = str(max(transfer_files, key=lambda x: x.stat().st_mtime))
+        transfers_file = str(latest_file)
 
     logging.info(f"Loading transfers from {transfers_file}")
     df_transfers = load_transfers_mapped_names(transfers_file)
@@ -84,4 +84,4 @@ def main(
 
 
 if __name__ == "__main__":
-    fire.Fire(main)
+    fire.Fire(get_match_logs)

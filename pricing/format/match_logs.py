@@ -1,4 +1,6 @@
 import csv
+from pathlib import Path
+from typing import Optional
 
 import pandas as pd
 from tqdm import tqdm
@@ -74,7 +76,7 @@ def get_post_transfer_match_logs(
                     + "_"
                     + str(transfer["to_club_name_mapped"])
                     + "_"
-                    + str(transfer_date)
+                    + transfer_date.strftime("%Y-%m-%d")
                 )
                 first_n_matches["transfer_date"] = transfer_date
                 first_n_matches["from_club"] = transfer["from_club_name_mapped"]
@@ -88,6 +90,14 @@ def get_post_transfer_match_logs(
         return pd.concat(match_logs_post_transfer, ignore_index=True)
 
     return None
+
+
+def find_latest_post_transfer_file(processed_data_path: Path) -> Optional[Path]:
+    """Find the most recent post-transfer match logs file"""
+    post_transfer_files = list(processed_data_path.glob("post_transfer_match_logs_*.csv"))
+    if not post_transfer_files:
+        return None
+    return max(post_transfer_files, key=lambda x: x.stat().st_mtime)
 
 
 def load_post_transfer_match_logs(file_path: str) -> pd.DataFrame:

@@ -32,6 +32,8 @@ class TransfermarktTransferMapped(TransfermarktTransfer):
     player_name_mapped: str
     from_club_name_mapped: str
     to_club_name_mapped: str
+    from_club_domestic_competition_id: str
+    to_club_domestic_competition_id: str
 
 
 class TransfermarktClub(BaseModel):

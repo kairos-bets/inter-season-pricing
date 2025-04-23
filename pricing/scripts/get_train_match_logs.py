@@ -1,12 +1,12 @@
 """
 This script gets the match logs for the training data.
 The training data consists of non post-transfer matches for players in the top 5 european leagues.
+You need to run the get_post_transfer_match_logs.py script first to get the post-transfer match logs.
 """
 
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 import fire
 import pandas as pd
@@ -14,6 +14,7 @@ import pandas as pd
 from pricing.format.match_logs import (
     create_match_id,
     create_player_match_id,
+    find_latest_post_transfer_file,
     load_elo_data,
     load_match_logs,
     load_post_transfer_match_logs,
@@ -28,15 +29,7 @@ PROCESSED_DATA_PATH = DATA_PATH / "processed"
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
-def find_latest_post_transfer_file() -> Optional[Path]:
-    """Find the most recent post-transfer match logs file"""
-    post_transfer_files = list(PROCESSED_DATA_PATH.glob("post_transfer_match_logs_*.csv"))
-    if not post_transfer_files:
-        return None
-    return max(post_transfer_files, key=lambda x: x.stat().st_mtime)
-
-
-def main(
+def get_match_logs(
     match_logs_pattern: str = "*.csv", post_transfer_file: str = None, elo_pattern: str = "*.csv", add_elo: bool = False
 ) -> None:
     """
@@ -65,8 +58,8 @@ def main(
     logging.info(f"Loaded {len(df_match_logs)} total match log entries")
 
     # Find latest post-transfer file if not specified
-    if post_transfer_file is None:
-        latest_file = find_latest_post_transfer_file()
+    if not post_transfer_file:
+        latest_file = find_latest_post_transfer_file(PROCESSED_DATA_PATH)
         if latest_file is None:
             logging.error("No post-transfer match logs found!")
             return
@@ -126,4 +119,4 @@ def main(
 
 
 if __name__ == "__main__":
-    fire.Fire(main)
+    fire.Fire(get_match_logs)
