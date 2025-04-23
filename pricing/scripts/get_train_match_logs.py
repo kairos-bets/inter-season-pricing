@@ -14,12 +14,15 @@ import pandas as pd
 from pricing.format.match_logs import (
     create_match_id,
     create_player_match_id,
+    load_elo_data,
     load_match_logs,
     load_post_transfer_match_logs,
+    merge_elo_data,
 )
 
 DATA_PATH = Path(__file__).parent.parent.parent / "data"
 FBREF_MATCH_LOGS_PATH = DATA_PATH / "fbref" / "match_logs"
+FBREF_ELO_PATH = DATA_PATH / "fbref" / "elo"
 PROCESSED_DATA_PATH = DATA_PATH / "processed"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -33,13 +36,14 @@ def find_latest_post_transfer_file() -> Optional[Path]:
     return max(post_transfer_files, key=lambda x: x.stat().st_mtime)
 
 
-def main(match_logs_pattern: str = "*.csv", post_transfer_file: str = None) -> None:
+def main(match_logs_pattern: str = "*.csv", post_transfer_file: str = None, elo_pattern: str = "*.csv") -> None:
     """
-    Process match logs to extract training data (non post-transfer matches)
+    Process match logs to extract training data (non post-transfer matches) with ELO ratings
 
     Args:
         match_logs_pattern: Pattern to match match log files
         post_transfer_file: CSV file with post-transfer matches (if None, uses latest)
+        elo_pattern: Pattern to match ELO data files
     """
     logging.info("Starting training match logs processing")
 
@@ -89,6 +93,25 @@ def main(match_logs_pattern: str = "*.csv", post_transfer_file: str = None) -> N
     # Filter out post-transfer matches to create training set
     df_training = df_match_logs.loc[~df_match_logs["player_match_id"].isin(post_transfer_ids), :]
     logging.info(f"Created training set with {len(df_training)} player-match combinations")
+
+    # Load and merge ELO data
+    logging.info("Loading ELO data")
+    all_elo_data = []
+    for elo_file in FBREF_ELO_PATH.glob(elo_pattern):
+        logging.info(f"Processing ELO file {elo_file.name}")
+        df_elo = load_elo_data(str(elo_file))
+        all_elo_data.append(df_elo)
+
+    if not all_elo_data:
+        logging.warning("No ELO data files found! Training data will not include ELO information.")
+    else:
+        df_elo_all = pd.concat(all_elo_data, ignore_index=True)
+        logging.info(f"Loaded {len(df_elo_all)} ELO data entries")
+
+        # Merge ELO data with training data
+        logging.info("Merging ELO data with training data")
+        df_training = merge_elo_data(df_training, df_elo_all)
+        logging.info("Added ELO metrics to training data")
 
     # Save training data
     timestamp = datetime.now().strftime("%Y%m%d")

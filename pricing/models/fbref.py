@@ -67,3 +67,31 @@ class PostTransferPlayerMatchLogs(PlayerMatchLogs):
     to_club: str
     match_number_after_transfer: int
     days_since_transfer: Optional[int] = None
+
+
+class MatchElo(BaseModel):
+    """Pydantic model for match ELO data"""
+
+    date: Optional[str] = None
+    season: Optional[str] = None
+    home_team: str
+    away_team: str
+    home_score: Optional[int] = None
+    away_score: Optional[int] = None
+    home_elo_before: Optional[float] = None
+    away_elo_before: Optional[float] = None
+    home_elo_after: Optional[float] = None
+    away_elo_after: Optional[float] = None
+    home_elo_change: Optional[float] = None
+    away_elo_change: Optional[float] = None
+    home_win_prob: Optional[float] = None
+    home_power_before: Optional[float] = None
+    away_power_before: Optional[float] = None
+    home_power_after: Optional[float] = None
+    away_power_after: Optional[float] = None
+
+    @field_validator("*", mode="before")
+    def empty_str_to_none(cls: Any, v: Any) -> Optional[Any]:
+        if v == "":
+            return None
+        return v

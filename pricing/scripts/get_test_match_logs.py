@@ -5,3 +5,7 @@ The test set consists of post-transfer matches for players transferred to the to
 To be able to perform feature engineering down the line, we also include the match logs for these players
 before they moved to their new clubs.
 """
+
+### Map back to transfermarkt club to get domestic competition id
+### Map domestic competition id to FBref league id
+### Fetch match logs from FBref
