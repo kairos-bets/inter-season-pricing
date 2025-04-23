@@ -182,6 +182,14 @@ def get_transferred_players() -> None:
         competition_id_to_league_name=competition_id_to_league_name,
     )
 
+    # Filter out players that don't have a from_club_domestic_competition_id
+    mask_missing_from_competition = df_players_to_scrape["from_club_domestic_competition_id"] == ""
+    logging.info(
+        f"Filtering out {mask_missing_from_competition.sum()} players without a from-club competition ID \
+             from a total of {len(df_players_to_scrape)} players"
+    )
+    df_players_to_scrape = df_players_to_scrape[~mask_missing_from_competition]
+
     # Save the output
     timestamp = datetime.now().strftime("%Y%m%d")
     output_path = PROCESSED_DATA_PATH / f"players_to_scrape_{timestamp}.csv"
