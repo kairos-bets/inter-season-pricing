@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Optional
 
 from pydantic import BaseModel, field_validator
@@ -55,3 +56,14 @@ class PlayerMatchLogs(BaseModel):
         if v == "":
             return None
         return v
+
+
+class PostTransferPlayerMatchLogs(PlayerMatchLogs):
+    """Extended model for post-transfer match logs with additional transfer information"""
+
+    transfer_id: str
+    transfer_date: datetime
+    from_club: str
+    to_club: str
+    match_number_after_transfer: int
+    days_since_transfer: Optional[int] = None

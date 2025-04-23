@@ -3,7 +3,7 @@ import csv
 import pandas as pd
 from tqdm import tqdm
 
-from pricing.models.fbref import PlayerMatchLogs
+from pricing.models.fbref import PlayerMatchLogs, PostTransferPlayerMatchLogs
 
 
 def load_match_logs(file_path: str) -> pd.DataFrame:
@@ -88,3 +88,52 @@ def get_post_transfer_match_logs(
         return pd.concat(match_logs_post_transfer, ignore_index=True)
 
     return None
+
+
+def load_post_transfer_match_logs(file_path: str) -> pd.DataFrame:
+    """
+    Load and validate post-transfer player match logs
+    """
+    match_logs: list[PostTransferPlayerMatchLogs] = []
+    with open(file_path, "r") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            try:
+                log = PostTransferPlayerMatchLogs(**row)
+                match_logs.append(log)
+            except Exception as e:
+                print(f"Error loading match log: {e}")
+                continue
+
+    df_match_logs = pd.DataFrame([log.model_dump() for log in match_logs])
+    df_match_logs["date"] = pd.to_datetime(df_match_logs["date"], errors="coerce")
+    df_match_logs["transfer_date"] = pd.to_datetime(df_match_logs["transfer_date"], errors="coerce")
+
+    return df_match_logs
+
+
+def create_match_id(
+    df: pd.DataFrame, first_team_column: str, second_team_column: str, date_column: str
+) -> pd.DataFrame:
+    """
+    Create a unique match id for each match.
+    The match id is the concatenation of the sorted team names and the date.
+    """
+    df = df.copy()
+    df["match_id"] = df.apply(
+        lambda row: "_".join(
+            sorted([row[first_team_column], row[second_team_column]]) + [row[date_column].strftime("%Y-%m-%d")]
+        ),
+        axis=1,
+    )
+    return df
+
+
+def create_player_match_id(df: pd.DataFrame, player_id_column: str, match_id_column: str) -> pd.DataFrame:
+    """
+    Create a unique player match id for each match.
+    The player match id is the concatenation of the player id and the match id.
+    """
+    df = df.copy()
+    df["player_match_id"] = df[player_id_column] + "_" + df[match_id_column]
+    return df
