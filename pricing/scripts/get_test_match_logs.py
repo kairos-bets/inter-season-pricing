@@ -147,6 +147,9 @@ def build_combined_transfer_dataset(df_post_transfer: pd.DataFrame, df_all_match
     # Remove any duplicate matches (post-transfer data takes precedence)
     combined_df.sort_values(["is_post_transfer", "date"], ascending=[False, True], inplace=True)
     combined_df.drop_duplicates(subset=["player_id", "date", "team", "opponent"], keep="first", inplace=True)
+    combined_df.sort_values(
+        ["player_id", "date", "match_number_after_transfer"], ascending=[True, True, True], inplace=True
+    )
 
     logging.info(f"Created combined dataset with {len(combined_df)} match logs")
     return combined_df
