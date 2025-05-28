@@ -58,6 +58,11 @@ Our process:
 - enrich the test dataset with information about the games these players played in the championship right before they transferred to be able to do our feature engineering
 - perform feature engineering on train and enriched test
 
+We also:
+
+- fetch data for club ELOs to be able to calculate delta championship features (where we need ELOs for clubs in smaller EU championships like Belgium)
+- fetch odds data
+
 ## Features
 
 ## Modeling
