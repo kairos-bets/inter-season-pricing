@@ -15,7 +15,7 @@ from pricing.format.transfer import find_latest_transfers_mapped_file, load_tran
 
 DATA_PATH = Path(__file__).parent.parent.parent / "data"
 FBREF_MATCH_LOGS_PATH = DATA_PATH / "fbref" / "match_logs"
-PROCESSED_DATA_PATH = DATA_PATH / "processed"
+PROCESSED_DATA_PATH = DATA_PATH / "processed" / "final"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 

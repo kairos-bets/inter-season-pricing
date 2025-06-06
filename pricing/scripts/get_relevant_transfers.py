@@ -40,7 +40,7 @@ def get_transfers() -> None:
     logging.info(f"Filtered to {len(df_transfers)} relevant transfers")
 
     timestamp = datetime.now().strftime("%Y%m%d")
-    output_path = DATA_PATH / "processed" / f"transfers_relevant_{timestamp}.csv"
+    output_path = DATA_PATH / "processed" / "final" / f"transfers_relevant_{timestamp}.csv"
     logging.info(f"Saving filtered transfers to {output_path}")
 
     df_transfers.to_csv(output_path, index=False)
@@ -66,8 +66,8 @@ def get_transfers() -> None:
 
     df_transfers_mapped = add_club_domestic_competition_id(df_transfers_mapped, df_clubs)
 
-    output_path = DATA_PATH / "processed" / f"transfers_relevant_mapped_{timestamp}.csv"
-    unmapped_output_path = DATA_PATH / "processed" / f"transfers_relevant_unmapped_{timestamp}.csv"
+    output_path = DATA_PATH / "processed" / "final" / f"transfers_relevant_mapped_{timestamp}.csv"
+    unmapped_output_path = DATA_PATH / "processed" / "final" / f"transfers_relevant_unmapped_{timestamp}.csv"
     logging.info(f"Saving filtered transfers to {output_path}")
     logging.info(f"Saving unmapped transfers to {unmapped_output_path}")
 
