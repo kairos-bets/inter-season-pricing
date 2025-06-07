@@ -18,8 +18,8 @@ from tqdm import tqdm
 from pricing.models.club_elo import ClubElo
 
 DATA_PATH = Path(__file__).parent.parent.parent / "data"
-PROCESSED_DATA_PATH = DATA_PATH / "processed"
-CLUB_ELO_PATH = DATA_PATH / "club-elo"
+PROCESSED_DATA_PATH = DATA_PATH / "processed" / "final"
+CLUB_ELO_PATH = DATA_PATH / "club-elo" / "final"
 
 # Ensure the club-elo directory exists
 CLUB_ELO_PATH.mkdir(parents=True, exist_ok=True)

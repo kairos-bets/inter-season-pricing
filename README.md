@@ -52,10 +52,11 @@ pre-commit install
 
 Our process:
 
-- use transfer information from transfermarkt to select relevant transfers (player transferred to a club in the top 5 EU leagues in the past 5 seasons)
-- create a dataset with the first X games for these players right after they have been transferred (the test dataset)
-- create a train dataset with all the other games for all players in these top 5 EU leagues (i.e. non post-transfer games). We have to be careful here because we need to keep post-transfer games for the feature engineering that will be used in our training set, we just don't want to train the model on the post-transfer lines
-- enrich the test dataset with information about the games these players played in the championship right before they transferred to be able to do our feature engineering
+- use transfer information from transfermarkt to select relevant transfers (player transferred to a club in the top 5 EU leagues in the past 5 seasons): `get_relevant_transfers.py`
+- create a dataset with the first X games for these players right after they have been transferred (the test dataset): `get_post_transfer_match_logs.py`
+- create a train dataset with all the other games for all players in these top 5 EU leagues (i.e. non post-transfer games). We have to be careful here because we need to keep post-transfer games for the feature engineering that will be used in our training set, we just don't want to train the model on the post-transfer lines: `get_train_match_logs.py`
+- enrich the test dataset with information about the games these players played in the championship right before they transferred to be able to do our feature engineering: `get_test_match_logs.py` (you need to have obtained the `transferred_match_logs_*` file beforehand)
+- Add club ELO information: `format_club_elos.py` then `add_club_elos_to_match_logs.py`
 - perform feature engineering on train and enriched test
 
 We also:

@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 # Path constants
 DATA_PATH = Path(__file__).parent.parent.parent.parent / "data"
-PROCESSED_DATA_PATH = DATA_PATH / "processed"
+PROCESSED_DATA_PATH = DATA_PATH / "processed" / "final"
 
 
 def find_latest_combined_elos_file() -> Path:

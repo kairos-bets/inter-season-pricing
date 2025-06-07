@@ -20,7 +20,7 @@ from pricing.format.match_logs import (
 )
 
 DATA_PATH = Path(__file__).parent.parent.parent / "data"
-PROCESSED_DATA_PATH = DATA_PATH / "processed"
+PROCESSED_DATA_PATH = DATA_PATH / "processed" / "final"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 

@@ -25,7 +25,7 @@ from pricing.format.match_logs import (
 DATA_PATH = Path(__file__).parent.parent.parent / "data"
 FBREF_MATCH_LOGS_PATH = DATA_PATH / "fbref" / "match_logs"
 FBREF_ELO_PATH = DATA_PATH / "fbref" / "elo"
-PROCESSED_DATA_PATH = DATA_PATH / "processed"
+PROCESSED_DATA_PATH = DATA_PATH / "processed" / "final"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
